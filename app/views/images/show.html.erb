@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @image.title %>
+</p>
+
+<p>
+  <strong>Created by:</strong>
+  <%= @image.created_by %>
+</p>
+
+<p>
+  <strong>Visibility:</strong>
+  <%= @image.visibility %>
+</p>
+
+<p>
+  <strong>Content:</strong>
+  <%= @image.content %>
+</p>
+
+<% if @image.picture.attached? %>
+<!-- @post.picture.present? will always return true, use attached? to check presence -->
+  <p>
+    <strong>Image:</strong>
+    <br>
+    <%= image_tag @image.picture %>
+  </p>
+<% end %>
+
+<%= link_to 'Edit', edit_image_path(@image) %> |
+<%= link_to 'Back', images_path %>
