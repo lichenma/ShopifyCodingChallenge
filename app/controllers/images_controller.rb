@@ -16,6 +16,12 @@ class ImagesController < ApplicationController
   # - Might want to consider adding this feature as well to verify that the response json is valid 
 
 
+  # API VERSIONING - SERIALIZATION - PAGINATION (look to add)
+
+  # ADD BULK DELETE 
+  # DISCUSS THE N+1 QUERIES ISSUE WITH IMAGE CONTROLLER 
+  # LOOK INTO BULK ADD  
+  # CLEAN UP 
 
 
 
