@@ -48,6 +48,7 @@ class ImagesController < ApplicationController
      
   # TEST DRIVEN DEVELOPMENT AND RSPEC TESTS 
   # - Test Driven Development and just general best practice to include testing as we go through the API development process 
+  # - currently a work in progress, I mostly developed this project using unit testing with the generated ERBs 
 
 
   # SEARCH/SELL/BUY IMAGES 
@@ -61,8 +62,9 @@ class ImagesController < ApplicationController
   # - use Rekognition so that when a user first makes a POST request we could parse the image and associate it with some keywords which 
   #   can then be used to query the image 
 
-  
+
   # Managing Inventory and Sales 
+  # - 
 
 
   # GET /images
