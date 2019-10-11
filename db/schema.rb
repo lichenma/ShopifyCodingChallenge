@@ -36,10 +36,12 @@ ActiveRecord::Schema.define(version: 2019_10_10_053416) do
   create_table "images", force: :cascade do |t|
     t.string "title"
     t.string "created_by"
+    t.integer "user_id"
     t.string "visibility"
     t.text "content"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_images_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -55,4 +57,5 @@ ActiveRecord::Schema.define(version: 2019_10_10_053416) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "images", "users"
 end
