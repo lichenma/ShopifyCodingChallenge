@@ -18,11 +18,51 @@ class ImagesController < ApplicationController
 
   # API VERSIONING - SERIALIZATION - PAGINATION (look to add)
 
-  # ADD BULK DELETE 
-  # DISCUSS THE N+1 QUERIES ISSUE WITH IMAGE CONTROLLER 
-  # LOOK INTO BULK ADD  
-  # CLEAN UP 
 
+  # BOTTLENECKS 
+  # - issue with how the backend image repository is set up is that it uses storage as a way to store the actual images 
+  # - how active storage operates behind the scenes is as follows:
+  # 
+  # - Submitting a form  
+  #   - when we submit a form, Rails processes the form, stores the received file on disk, encodes its location as a key 
+  #   - it then references that key in the active_storage_blobs table and creates a new record in the images table 
+  #   - finally it associates an image with a Blob through active_storage_attachments 
+  #
+  # - Retrieving an image  
+  #   - one get request turns into three: ActiveStorage::BlobsController and ActiveStorage::DiskController are both involved 
+  #   - they are all used to serve up the image and the URL will always be decoupled from its actual location 
+  #   - If a cloud service is used: BlobsController will redirect to a correct URL located in the cloud 
+
+  # - given that rendering one attachment results in at least three database queries this might be an issue if we are 
+  # - sequentially calling lots of requests 
+  
+  # - for bulk modifications Active Storage provides a solution as it provides a scope with_attached_picture (or whatever the attachment name is)
+  # - which includes the associated blobs - we can put this into practice by changing Image.all to Image.with_attached_picture
+  
+
+  # BULK ADDITION 
+  # - There is a way to implement bulk adding images by associating each image with multiple pictures 
+  # - One line change but the user might want to do something else like sequentially create multiple images posts by uploading a ton of images 
+  # - this is currentlly not supported in this application 
+
+     
+  # TEST DRIVEN DEVELOPMENT AND RSPEC TESTS 
+  # - Test Driven Development and just general best practice to include testing as we go through the API development process 
+
+
+  # SEARCH/SELL/BUY IMAGES 
+  # - Really interested in developing these functionalities (my original intention of the project) but getting the basic crud/user/permissions 
+  #   took a bit longer than I would have liked 
+
+
+  # Queries 
+  # - Idea was to make querying functionality so we could filter based on the title, created_by, content 
+  # - also wanted to look into Amazon Rekognition so that I could query based on the contents of the image 
+  # - use Rekognition so that when a user first makes a POST request we could parse the image and associate it with some keywords which 
+  #   can then be used to query the image 
+
+  
+  # Managing Inventory and Sales 
 
 
   # GET /images
@@ -50,8 +90,7 @@ class ImagesController < ApplicationController
 
   # GET /images/1/edit
   def edit
-    query = "created_by = \"#{current_user.id}\""
-    @image = Image.where(query).find(params[:id])
+    @image = Image.find_by(params[:id], created_by: "#{current_user.id}")
   end
 
   # POST /images
@@ -73,8 +112,7 @@ class ImagesController < ApplicationController
   # PATCH/PUT /images/1
   # PATCH/PUT /images/1.json
   def update
-    query = "created_by = \"#{current_user.id}\""
-    @image = Image.where(query).find(params[:id])
+    @image = Image.find_by(params[:id], created_by: "#{current_user.id}")
 
     respond_to do |format|
       if @image.update(image_params)
@@ -90,12 +128,23 @@ class ImagesController < ApplicationController
   # DELETE /images/1
   # DELETE /images/1.json
   def destroy
-    query = "created_by = \"#{current_user.id}\""
-    @image = Image.where(query).find(params[:id])
+    @image = Image.find_by(params[:id], created_by: "#{current_user.id}")
 
     @image.destroy
     respond_to do |format|
       format.html { redirect_to images_url, notice: 'Image was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+
+
+  # DELETE /images/all
+  def bulk_destroy
+    # This allows us to remove all entries from the table corresponding to our current user 
+    @images = Image.where(created_by: "#{current_user.id}")
+    @images.destroy_all
+    respond_to do |format|
+      format.html { redirect_to images_url, notice: 'Images belonging to user were successfully destroyed.' }
       format.json { head :no_content }
     end
   end

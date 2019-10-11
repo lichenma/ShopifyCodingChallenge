@@ -25,6 +25,9 @@
         <td><%= link_to 'Destroy', image, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
+    <tr>
+      <td><%= link_to 'Bulk_destroy', bulk_destroy_images_path, method: :delete, data: { confirm: 'Are you sure?' } %></td> 
+    </tr>
   </tbody>
 </table>
 
