@@ -1,5 +1,6 @@
 <p id="notice"><%= notice %></p>
 
+<% if !@image.blank? %>
 <p>
   <strong>Title:</strong>
   <%= @image.title %>
@@ -31,3 +32,4 @@
 
 <%= link_to 'Edit', edit_image_path(@image) %> |
 <%= link_to 'Back', images_path %>
+<% end %>

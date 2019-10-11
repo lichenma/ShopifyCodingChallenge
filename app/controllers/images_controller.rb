@@ -1,15 +1,40 @@
 class ImagesController < ApplicationController
   before_action :set_image, only: [:show, :edit, :update, :destroy]
 
+  # DATABASE 
+  # - The queries are currently written up for SQLite since this in memory database was chosen to quickly get the project up and running
+  # - In the future for the sake of scalability I would definitely want to move it to some form of cloud service (Amazon A3, Microsoft, Google)
+  # - SQL/noSQL 
+
+
+  # MODEL VIEW CONTROLLER 
+  # - expand on and style the view for easy form submission 
+  # - models and controllers are organized in their respective folders 
+
+
+  # JSON VALIDATION 
+  # - Might want to consider adding this feature as well to verify that the response json is valid 
+
+
+
+
+
   # GET /images
   # GET /images.json
   def index
-    @images = Image.all
+    # TODO: create a service constants class and a function for generating queries 
+    visible_flag = "public"
+    query = "created_by = \"#{current_user.id}\" OR visibility = \"#{visible_flag}\""
+    @images = Image.where(query)
   end
 
   # GET /images/1
   # GET /images/1.json
   def show
+    visible_flag = "public"
+    query = "created_by = #{current_user.id} OR visibility = \"#{visible_flag}\""
+    # design pattern that you can see public images but you cannot modify or delete them 
+    @image = Image.where(query).find(params[:id])
   end
 
   # GET /images/new
@@ -19,6 +44,8 @@ class ImagesController < ApplicationController
 
   # GET /images/1/edit
   def edit
+    query = "created_by = \"#{current_user.id}\""
+    @image = Image.where(query).find(params[:id])
   end
 
   # POST /images
@@ -40,6 +67,9 @@ class ImagesController < ApplicationController
   # PATCH/PUT /images/1
   # PATCH/PUT /images/1.json
   def update
+    query = "created_by = \"#{current_user.id}\""
+    @image = Image.where(query).find(params[:id])
+
     respond_to do |format|
       if @image.update(image_params)
         format.html { redirect_to @image, notice: 'Image was successfully updated.' }
@@ -54,6 +84,9 @@ class ImagesController < ApplicationController
   # DELETE /images/1
   # DELETE /images/1.json
   def destroy
+    query = "created_by = \"#{current_user.id}\""
+    @image = Image.where(query).find(params[:id])
+
     @image.destroy
     respond_to do |format|
       format.html { redirect_to images_url, notice: 'Image was successfully destroyed.' }
@@ -64,6 +97,7 @@ class ImagesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_image
+      # honestly this function is not really used as we update @image in the functions
       @image = Image.find(params[:id])
     end
 
